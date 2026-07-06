@@ -163,6 +163,27 @@ async function login(page, email, password) {
   }
 
   await page.fill(emailSel, email);
+
+  // The password field can be present in the DOM but hidden until the
+  // email step is submitted (a two-step "enter email, then password"
+  // flow). If it's not visible yet, submit the email step first and wait
+  // for the password field to appear before trying to fill it.
+  const passwordAlreadyVisible = await page.isVisible(passwordSel).catch(() => false);
+  if (!passwordAlreadyVisible) {
+    const continueSelectors = [
+      'button:has-text("Continue")',
+      'button:has-text("Next")',
+      'button[type="submit"]',
+    ];
+    const continueSel = await firstMatchingSelector(page, continueSelectors);
+    if (continueSel) {
+      await page.click(continueSel);
+    } else {
+      await page.keyboard.press('Enter');
+    }
+    await page.waitForSelector(passwordSel, { state: 'visible', timeout: 15000 });
+  }
+
   await page.fill(passwordSel, password);
 
   const submitSel = await firstMatchingSelector(page, submitSelectors);
