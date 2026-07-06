@@ -1,0 +1,13 @@
+{
+  "name": "sugarwod-schedule-download",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Download the weekly SugarWOD workout schedule as JSON",
+  "main": "download-schedule.js",
+  "scripts": {
+    "start": "node download-schedule.js"
+  },
+  "dependencies": {
+    "playwright": "^1.61.1"
+  }
+}
